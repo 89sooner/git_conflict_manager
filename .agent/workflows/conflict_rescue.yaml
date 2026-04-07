@@ -1,0 +1,27 @@
+workflow: Conflict_Rescue_Pipeline
+trigger:
+  event: conflict_detected
+  context: user_local_workspace
+
+steps:
+  - id: analyze_git_state
+    agent: git_interpreter
+    prompt: >
+      사용자가 충돌을 겪고 있다. 현재 `git status`와 `git log --oneline -n 5` 결과를 바탕으로
+      현재 어떤 작업(Merge/Rebase/Cherry-pick) 중 멈췄는지 파악하고 Perforce의 관점에서 이 상황을 번역하라.
+
+  - id: resolve_conflict_logic
+    agent: conflict_resolver
+    params:
+      conflict_files: ${{ context.conflict_files }}
+      diff_context: ${{ context.git_diff_conflict }}
+    prompt: >
+      발생한 충돌의 원인을 분석하고, 어느 쪽 코드를 채택하거나 어떻게 병합해야 하는지 가이드를 작성하라.
+      생성 코드 파일 충돌인 경우 수동 병합 대신 재생성을 지시하라.
+
+  - id: deliver_solution
+    action: ui.display_interactive_guide
+    data:
+      current_state: ${{ steps.analyze_git_state.output }}
+      resolution_steps: ${{ steps.resolve_conflict_logic.output }}
+      abort_command: "git rebase --abort (또는 상황에 맞는 중단 명령어)"

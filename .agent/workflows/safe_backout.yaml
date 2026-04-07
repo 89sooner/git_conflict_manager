@@ -1,0 +1,29 @@
+workflow: Safe_Backout_Pipeline
+trigger:
+  event: user_action
+  command: /request-backout
+  inputs: [pr_number, reason_ticket]
+
+steps:
+  - id: verify_policy
+    agent: policy_manager
+    prompt: >
+      PR #${{ inputs.pr_number }}가 병합된 브랜치가 릴리스 브랜치인지 확인하고,
+      Backout을 위해 필요한 최소 승인권자(예: 모듈 리드)를 파악하라.
+
+  - id: analyze_dependencies
+    action: revert_pr_generator.check_commit_dependencies
+    params:
+      target_commit_sha: ${{ context.pr_merge_commit_sha }}
+
+  - id: generate_revert_pr
+    action: revert_pr_generator.create_backout_pr
+    params:
+      target_commit_sha: ${{ context.pr_merge_commit_sha }}
+      reason_ticket_url: ${{ inputs.reason_ticket }}
+
+  - id: notify_stakeholders
+    agent: policy_manager
+    prompt: >
+      생성된 Backout PR에 ${{ steps.verify_policy.output }}에서 파악한 필수 승인권자를 할당하고,
+      ${{ steps.analyze_dependencies.output }} 결과를 바탕으로 후속 충돌 위험성을 코멘트로 남겨라.
