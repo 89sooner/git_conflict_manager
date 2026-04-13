@@ -96,3 +96,11 @@ desktop.ini
 # ──────────────────────────────────────────────
 .claude/settings.local.json
 .omc/
+.omc/state/*
+
+# ──────────────────────────────────────────────
+# Local runtime state (HUD / memory cache)
+# ──────────────────────────────────────────────
+hud-state.json
+project-memory.json
+hud-stdin-cache.json
