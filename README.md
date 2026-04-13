@@ -59,10 +59,27 @@ tests/       계약 / 통합 / E2E 테스트
 5. 그 다음 `workflows/02_backend_contract_first.md`
 6. 그 다음 `workflows/03_github_app_integration.md`
 
+## 런타임 요구사항
+
+- Node.js 22 (`.nvmrc` 참조, `nvm use` 또는 `fnm use` 권장)
+- Corepack 활성화 후 pnpm 10 (`package.json`의 `packageManager` 필드 기준)
+- PostgreSQL 15+ (추후 Phase 3 이후 필요)
+
+## Bootstrap (WSL / Linux)
+
+```bash
+nvm use                  # .nvmrc 기준 Node 22 활성화
+corepack enable          # pnpm 프로비저닝
+corepack prepare pnpm@10.0.0 --activate
+pnpm install --frozen-lockfile
+```
+
+최초 체크아웃에서는 `pnpm-lock.yaml`이 저장소에 고정되어 있어야 하며, lockfile drift가 발생하면 CI가 실패한다.
+
 ## 개발 명령
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm lint
 pnpm typecheck
 pnpm test

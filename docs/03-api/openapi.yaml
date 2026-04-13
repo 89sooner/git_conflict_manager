@@ -673,12 +673,87 @@ components:
       type: string
       enum: [low, medium, high, critical]
 
+    ErrorCode:
+      type: string
+      description: |
+        Canonical machine-readable error code. Source of truth:
+        `docs/03-api/error_code_standard.md`. New codes must be added there
+        and mirrored here before use.
+      enum:
+        - AUTH_REQUIRED
+        - AUTH_TOKEN_EXPIRED
+        - AUTH_TOKEN_INVALID
+        - SSO_ACCESS_DENIED
+        - PERMISSION_DENIED
+        - REPOSITORY_ACCESS_DENIED
+        - ORG_SCOPE_DENIED
+        - ADMIN_REQUIRED
+        - INVALID_REQUEST
+        - INVALID_FILTER
+        - VALIDATION_FAILED
+        - IDEMPOTENCY_KEY_CONFLICT
+        - GITHUB_APP_NOT_INSTALLED
+        - GITHUB_APP_PERMISSION_INSUFFICIENT
+        - GITHUB_API_RATE_LIMITED
+        - GITHUB_API_UNAVAILABLE
+        - GITHUB_WEBHOOK_SIGNATURE_INVALID
+        - GITHUB_RESOURCE_STALE
+        - REPOSITORY_NOT_FOUND
+        - BRANCH_NOT_FOUND
+        - BASE_BRANCH_REQUIRED
+        - BRANCH_NAME_INVALID
+        - HISTORY_GRAPH_TOO_LARGE
+        - PR_NOT_FOUND
+        - PR_ANALYSIS_NOT_READY
+        - PR_ANALYSIS_FAILED
+        - PR_BASE_BRANCH_INVALID
+        - PR_REVIEWERS_REQUIRED
+        - PR_CODEOWNERS_MISSING
+        - PR_REQUIRED_CHECKS_FAILED
+        - PR_MERGE_QUEUE_REQUIRED
+        - PR_ALREADY_LINKED
+        - CONFLICT_CASE_NOT_FOUND
+        - CONFLICT_TYPE_UNSUPPORTED
+        - CONFLICT_CONTEXT_INSUFFICIENT
+        - CONFLICT_GUIDANCE_NOT_READY
+        - CONFLICT_ESCALATION_REQUIRED
+        - BACKOUT_NOT_FOUND
+        - BACKOUT_REASON_REQUIRED
+        - BACKOUT_TARGET_REQUIRED
+        - BACKOUT_APPROVER_REQUIRED
+        - BACKOUT_ALREADY_EXISTS
+        - BACKOUT_REVERT_PR_GENERATION_FAILED
+        - BACKOUT_RELEASE_POLICY_BLOCKED
+        - BACKOUT_CONFLICT_PREDICTED
+        - POLICY_TEMPLATE_NOT_FOUND
+        - POLICY_RULE_INVALID
+        - POLICY_APPLY_SCOPE_INVALID
+        - POLICY_EXCEPTION_REQUIRED
+        - POLICY_ENFORCEMENT_BLOCKED
+        - POLICY_VERSION_CONFLICT
+        - DASHBOARD_RANGE_INVALID
+        - ANALYTICS_NOT_READY
+        - JOB_NOT_FOUND
+        - JOB_ALREADY_TERMINAL
+        - JOB_TIMEOUT
+        - JOB_WORKER_UNAVAILABLE
+        - INTERNAL_SERVER_ERROR
+        - DEPENDENCY_UNAVAILABLE
+        - DATABASE_UNAVAILABLE
+        - CACHE_UNAVAILABLE
+        - UPSTREAM_TIMEOUT
+
     ApiMeta:
       type: object
       additionalProperties: false
       properties:
         requestId:
           type: string
+          description: Request tracing id, always present on API responses.
+        timestamp:
+          type: string
+          format: date-time
+          description: Server response time in ISO-8601 UTC.
         page:
           type: integer
         pageSize:
@@ -689,19 +764,27 @@ components:
     ErrorResponse:
       type: object
       additionalProperties: false
-      required: [error]
+      required: [error, meta]
       properties:
         error:
           type: object
-          required: [code, message]
+          additionalProperties: false
+          required: [code, message, retryable]
           properties:
             code:
-              type: string
+              $ref: '#/components/schemas/ErrorCode'
             message:
               type: string
+              description: Default user-visible message in the active locale.
             details:
               type: object
               additionalProperties: true
+            retryable:
+              type: boolean
+              description: Whether retrying the same request is meaningful.
+            userAction:
+              type: string
+              description: Suggested next user action, if any.
         meta:
           $ref: '#/components/schemas/ApiMeta'
 
@@ -1277,6 +1360,25 @@ components:
         target:
           $ref: '#/components/schemas/BackoutTarget'
 
+    BackoutStatus:
+      type: string
+      description: |
+        Full backout state machine. Source of truth:
+        `docs/03-api/state_transition_spec.md` section 7.
+      enum:
+        - draft
+        - validating
+        - pending-approval
+        - approved
+        - blocked
+        - ready
+        - pr-generating
+        - pr-open
+        - queued-for-merge
+        - merged
+        - failed
+        - cancelled
+
     BackoutSummary:
       type: object
       additionalProperties: false
@@ -1290,8 +1392,7 @@ components:
         targetBranch:
           type: string
         status:
-          type: string
-          enum: [draft, pending-approval, ready, merged, failed, cancelled]
+          $ref: '#/components/schemas/BackoutStatus'
         urgency:
           type: string
           enum: [normal, high, emergency]

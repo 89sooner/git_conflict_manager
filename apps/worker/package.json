@@ -7,7 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "lint": "echo 'lint worker'",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "clean": "rm -rf dist"
   },
   "devDependencies": {

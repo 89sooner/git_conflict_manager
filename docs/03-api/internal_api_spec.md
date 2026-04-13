@@ -1,5 +1,11 @@
 # GitHub Enterprise 전환 지원 도구 내부 API 명세 초안
 
+> **Reference-only.** 이 문서는 초안이며, API 계약의 최종 기준은 `docs/03-api/openapi.yaml`이다.
+> 본 문서의 필드 네이밍(예: `request_id`, `pull_request_id`, `backout_request_id`) 및 응답 예시는
+> `openapi.yaml`이 사용하는 camelCase (`requestId`, `pullRequestId`, `backoutId`)와 다를 수 있다.
+> 구현 시에는 항상 `openapi.yaml`과 `docs/03-api/error_code_standard.md`,
+> `docs/03-api/state_transition_spec.md`를 먼저 따른다. 본 문서는 설계 의도 파악 용도로만 사용한다.
+
 ## 1. 문서 개요
 
 - 문서명: 내부 API 명세 초안

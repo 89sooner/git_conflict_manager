@@ -3,30 +3,17 @@
 # ──────────────────────────────────────────────
 node_modules/
 .pnpm-store/
+pnpm-lock.yaml
 
 # ──────────────────────────────────────────────
-# Build outputs
+# Build outputs & caches
 # ──────────────────────────────────────────────
 dist/
 build/
-out/
-
-# ──────────────────────────────────────────────
-# Next.js
-# ──────────────────────────────────────────────
 .next/
-next-env.d.ts
-
-# ──────────────────────────────────────────────
-# TypeScript
-# ──────────────────────────────────────────────
+.turbo/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
-
-# ──────────────────────────────────────────────
-# Turborepo
-# ──────────────────────────────────────────────
-.turbo/
 
 # ──────────────────────────────────────────────
 # Test artefacts
@@ -34,17 +21,14 @@ tsconfig.tsbuildinfo
 coverage/
 .playwright/
 test-results/
-playwright-report/
 *.snap
 
 # ──────────────────────────────────────────────
-# Logs
+# Logs & OS noise
 # ──────────────────────────────────────────────
 *.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+.DS_Store
+Thumbs.db
 
 # ──────────────────────────────────────────────
 # Secrets & environment
@@ -54,45 +38,28 @@ yarn-error.log*
 !.env.example
 
 # ──────────────────────────────────────────────
-# Terraform
+# Infrastructure generated / state files
 # ──────────────────────────────────────────────
 infra/terraform/.terraform/
-infra/terraform/.terraform.lock.hcl
 infra/terraform/*.tfstate
 infra/terraform/*.tfstate.backup
-infra/terraform/*.tfvars
-!infra/terraform/*.tfvars.example
-infra/terraform/override.tf
-infra/terraform/override.tf.json
-infra/terraform/*_override.tf
-infra/terraform/*_override.tf.json
-infra/terraform/.terraformrc
-infra/terraform/terraform.rc
+infra/terraform/.terraform.lock.hcl
 
 # ──────────────────────────────────────────────
-# Docker
-# ──────────────────────────────────────────────
-.dockerignore.local
-
-# ──────────────────────────────────────────────
-# OS noise
-# ──────────────────────────────────────────────
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# ──────────────────────────────────────────────
-# Editor / IDE
-# ──────────────────────────────────────────────
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# ──────────────────────────────────────────────
-# Internal agent / Claude local settings
-# (skills & docs are committed, local config is not)
+# Internal Claude / agent tooling
+# (agent skills & hooks are readable, but
+#  local settings containing tokens are not)
 # ──────────────────────────────────────────────
 .claude/settings.local.json
 .omc/
+
+# ──────────────────────────────────────────────
+# Git internals
+# ──────────────────────────────────────────────
+.git/
+
+# ──────────────────────────────────────────────
+# Large generated API / lock files
+# (openapi.yaml is the contract – keep it readable)
+# ──────────────────────────────────────────────
+docs/03-api/openapi_3_1_spec_draft.md
