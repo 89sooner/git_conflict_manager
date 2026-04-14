@@ -306,3 +306,57 @@ export function riskBadge(level: RiskLevel): BadgeDescriptor {
 export function backoutBadge(state: BackoutState): BadgeDescriptor {
   return BACKOUT_STATE_BADGES[state];
 }
+
+/**
+ * Conflict Case 상태 — mirrors docs/03-api/state_transition_spec.md §6.1.
+ */
+export type ConflictCaseStatus =
+  | 'detected'
+  | 'analyzing'
+  | 'guided'
+  | 'user-working'
+  | 'resolved'
+  | 'aborted'
+  | 'stale';
+
+export const CONFLICT_STATUS_BADGES = {
+  detected: {
+    label: 'Conflict Detected',
+    tone: 'warning' as BadgeTone,
+    description: '충돌 감지됨, 해결 필요',
+  },
+  analyzing: {
+    label: 'Analyzing',
+    tone: 'info' as BadgeTone,
+    description: '충돌 유형 분석 중',
+  },
+  guided: {
+    label: 'Guide Ready',
+    tone: 'warning' as BadgeTone,
+    description: '가이드 제공 완료, 해결 진행 필요',
+  },
+  'user-working': {
+    label: 'In Progress',
+    tone: 'info' as BadgeTone,
+    description: '해결 작업 중',
+  },
+  resolved: {
+    label: 'Resolved',
+    tone: 'success' as BadgeTone,
+    description: '충돌 해결 완료',
+  },
+  aborted: {
+    label: 'Aborted',
+    tone: 'neutral' as BadgeTone,
+    description: '작업 중단',
+  },
+  stale: {
+    label: 'Stale',
+    tone: 'warning' as BadgeTone,
+    description: '원본 변경으로 재분석 필요',
+  },
+} as const satisfies Record<ConflictCaseStatus, BadgeDescriptor>;
+
+export function conflictBadge(status: ConflictCaseStatus): BadgeDescriptor {
+  return CONFLICT_STATUS_BADGES[status];
+}

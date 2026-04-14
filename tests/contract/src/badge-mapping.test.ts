@@ -2,10 +2,12 @@ import { describe, it, expect } from 'vitest';
 import {
   BACKOUT_STATE_BADGES,
   BACKOUT_STATES,
+  CONFLICT_STATUS_BADGES,
   PR_STATE_BADGES,
   RISK_BADGES,
   type BackoutState,
   type BadgeTone,
+  type ConflictCaseStatus,
   type PullRequestState,
   type RiskLevel,
 } from '@gsp/shared-types';
@@ -61,5 +63,24 @@ describe('badge mappings', () => {
       expect(ALLOWED_TONES).toContain(descriptor.tone);
     }
     expect(Object.keys(BACKOUT_STATE_BADGES).sort()).toEqual([...BACKOUT_STATES].sort());
+  });
+
+  it('covers every conflict case status', () => {
+    const CONFLICT_STATUSES: ConflictCaseStatus[] = [
+      'detected',
+      'analyzing',
+      'guided',
+      'user-working',
+      'resolved',
+      'aborted',
+      'stale',
+    ];
+    for (const status of CONFLICT_STATUSES) {
+      const descriptor = CONFLICT_STATUS_BADGES[status];
+      expect(descriptor).toBeDefined();
+      expect(descriptor.label).toBeTruthy();
+      expect(ALLOWED_TONES).toContain(descriptor.tone);
+    }
+    expect(Object.keys(CONFLICT_STATUS_BADGES).sort()).toEqual([...CONFLICT_STATUSES].sort());
   });
 });
