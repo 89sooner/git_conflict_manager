@@ -6,6 +6,8 @@ import { registerErrorHandler } from './plugins/errorHandler.js';
 import { registerHealthRoutes } from './routes/health.js';
 import { registerMeRoutes } from './routes/me.js';
 import { registerWebhookRoutes } from './routes/webhooks.js';
+import { registerRepositoryRoutes } from './routes/repositories.js';
+import { registerPullRequestRoutes } from './routes/pullRequests.js';
 
 export interface CreateServerOptions {
   logger?: boolean;
@@ -37,6 +39,9 @@ export function createServer(options: CreateServerOptions = {}): FastifyInstance
       : (process.env.GITHUB_WEBHOOK_SECRET ?? '');
 
   app.register(registerWebhookRoutes, { webhookSecret });
+
+  registerRepositoryRoutes(app);
+  registerPullRequestRoutes(app);
 
   return app;
 }

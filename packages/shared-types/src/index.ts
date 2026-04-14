@@ -150,6 +150,83 @@ export interface UserProfile {
 
 export type UserProfileResponse = DataEnvelope<UserProfile>;
 
+// ─── Read model types — Phase 4 ────────────────────────────────────────────
+
+export type RepositoryVisibility = 'private' | 'internal' | 'public';
+export type BranchKind = 'default' | 'release' | 'feature' | 'hotfix' | 'other';
+export type PullRequestViewState = 'open' | 'closed' | 'merged' | 'draft';
+
+/** mirrors openapi.yaml #/components/schemas/RepositorySummary */
+export interface RepositorySummary {
+  id: string;
+  githubNodeId: string;
+  name: string;
+  fullName: string;
+  defaultBranch: string;
+  visibility: RepositoryVisibility;
+  teamName: string | null;
+  riskLevel: RiskLevel;
+  openPullRequestCount: number;
+  staleBranchCount: number;
+}
+
+/** mirrors openapi.yaml #/components/schemas/BranchSummary */
+export interface BranchSummary {
+  name: string;
+  kind: BranchKind;
+  isProtected: boolean;
+  isStale: boolean;
+  aheadBy: number;
+  behindBy: number;
+  latestCommitSha: string;
+}
+
+export interface BuildSummary {
+  id: string;
+  name: string;
+  status: 'success' | 'failure' | 'pending' | 'cancelled';
+  url: string | null;
+}
+
+/** mirrors openapi.yaml #/components/schemas/PullRequestSummary */
+export interface PullRequestSummary {
+  id: string;
+  number: number;
+  title: string;
+  state: PullRequestViewState;
+  author: UserSummary;
+  baseBranch: string;
+  headBranch: string;
+  riskLevel: RiskLevel;
+  hasConflicts: boolean;
+  waitingForReview: boolean;
+  updatedAt: string;
+}
+
+export interface PullRequestDetail {
+  pullRequest: PullRequestSummary;
+  changedFiles: number;
+  commits: number;
+  labels: string[];
+  linkedBuilds: BuildSummary[];
+  relatedIssues: string[];
+}
+
+export interface BranchDetail {
+  branch: BranchSummary;
+  interpretedStatus: string;
+  recommendedActions: string[];
+  linkedPullRequest: PullRequestSummary | null;
+}
+
+// Response envelope aliases
+export type RepositoryListResponse = DataEnvelope<RepositorySummary[]>;
+export type RepositorySummaryResponse = DataEnvelope<RepositorySummary>;
+export type BranchListResponse = DataEnvelope<BranchSummary[]>;
+export type BranchDetailResponse = DataEnvelope<BranchDetail>;
+export type PullRequestListResponse = DataEnvelope<PullRequestSummary[]>;
+export type PullRequestDetailResponse = DataEnvelope<PullRequestDetail>;
+
 /**
  * Badge tones — mirrors `docs/04-frontend/frontend_badge_action_mapping.md` §4.2.
  * Frontend badge components must map every state to one of these tokens.
