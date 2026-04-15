@@ -4,13 +4,16 @@ import type {
   RepositorySummaryResponse,
 } from '@gsp/shared-types';
 import { apiFetch } from './client';
+import type { QueryValue } from './client';
 
 export interface ListRepositoriesParams {
+  [key: string]: QueryValue;
   page?: number;
   pageSize?: number;
 }
 
 export interface ListBranchesParams {
+  [key: string]: QueryValue;
   page?: number;
   pageSize?: number;
 }

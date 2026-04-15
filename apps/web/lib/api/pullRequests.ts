@@ -5,8 +5,10 @@ import type {
   RiskLevel,
 } from '@gsp/shared-types';
 import { apiFetch } from './client';
+import type { QueryValue } from './client';
 
 export interface ListPullRequestsParams {
+  [key: string]: QueryValue;
   page?: number;
   pageSize?: number;
   repositoryId?: string;

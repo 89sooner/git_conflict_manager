@@ -15,7 +15,7 @@ export type QueryParams = Record<string, QueryValue>;
  * `body` is `unknown` because we always JSON-serialize on behalf of the caller.
  */
 export interface ApiFetchOptions extends Omit<RequestInit, 'body' | 'headers'> {
-  query?: object; // TODO(Phase 6): narrow to QueryParams once params interfaces carry index signatures
+  query?: QueryParams;
   body?: unknown;
   headers?: Record<string, string>;
 }

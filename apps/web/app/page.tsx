@@ -26,6 +26,12 @@ export default function HomePage() {
         <p className="text-muted-foreground text-sm mt-1">오늘 처리해야 할 주요 변경 사항과 위험 항목입니다.</p>
       </header>
 
+      {/* Demo data notice — Phase 5 shell. Replace with real read model in Phase 6. */}
+      <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700 flex items-center gap-2">
+        <span className="font-semibold">데모 데이터</span>
+        <span>이 대시보드의 수치와 목록은 Phase 5 셸 예시 데이터입니다. Phase 6에서 실제 read model로 교체됩니다.</span>
+      </div>
+
       {/* KPI Cards */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard title="내 오픈 PR" value="3" icon={<GitPullRequest className="h-4 w-4" />} />
