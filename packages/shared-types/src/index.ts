@@ -150,6 +150,35 @@ export interface UserProfile {
 
 export type UserProfileResponse = DataEnvelope<UserProfile>;
 
+/**
+ * Dev auth header name. The API accepts this header only in Phase ≤ 10 while
+ * SSO/OIDC is deferred. Both `apps/web` (injector) and `apps/api` (acceptor)
+ * must agree on the header name and the bootstrap user shape to avoid
+ * identity drift between the AppShell display and `/api/v1/me`.
+ *
+ * See `docs/05-decisions/adr-0001-web-data-fetching-strategy.md` (Decision 2).
+ */
+export const DEV_USER_HEADER = 'x-gsp-dev-user';
+
+/**
+ * Canonical bootstrap dev user. Used by both the API auth plugin
+ * (`apps/api/src/plugins/auth.ts`) and the web session resolver
+ * (`apps/web/lib/auth/session.ts`). Editing either side in isolation will
+ * break identity round-trips between the shell header and `/api/v1/me`.
+ */
+export const BOOTSTRAP_DEV_USER: UserSummary = {
+  id: '00000000-0000-0000-0000-000000000000',
+  login: 'bootstrap-user',
+  displayName: 'Bootstrap User',
+  email: null,
+};
+
+/**
+ * The literal value the API accepts in the `DEV_USER_HEADER`. Web callers
+ * must send exactly this string; any other value is rejected as anonymous.
+ */
+export const DEV_USER_BOOTSTRAP_TOKEN = 'bootstrap';
+
 // ─── Read model types — Phase 4 ────────────────────────────────────────────
 
 export type RepositoryVisibility = 'private' | 'internal' | 'public';

@@ -94,6 +94,25 @@ pnpm --filter @gsp/web dev
 pnpm --filter @gsp/worker dev
 ```
 
+### 로컬 개발 환경 변수
+
+웹 셸은 서버/클라이언트 base URL과 dev 인증 사용자를 분리해서 읽는다.
+
+```bash
+# apps/api 가 노출하는 내부 주소 (server component 에서 사용)
+export API_BASE_URL_INTERNAL=http://localhost:4000
+
+# 브라우저(Client component) 가 사용하는 공개 주소
+export NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+
+# Phase 10 SSO 도입 전, dev 인증 게이트
+export GSP_DEV_USER=bootstrap
+```
+
+`GSP_DEV_USER=bootstrap` 이 설정되면 `apps/web` 이 모든 API 호출에
+`x-gsp-dev-user: bootstrap` 헤더를 주입하고, AppShell 우측에 bootstrap dev user 가 표시된다.
+이 변수를 비우면 헤더가 누락되고 미인증 상태로 표시된다.
+
 ## 참고
 
 현재 scaffold는 초기 골격만 포함한다.

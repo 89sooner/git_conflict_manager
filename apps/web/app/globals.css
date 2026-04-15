@@ -4,33 +4,34 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* slate-50 */
-    --foreground: 222.2 84% 4.9%;
+    /* Enhanced violet dark mode - High Volume */
+    --background: 265 25% 7%;
+    --foreground: 265 10% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 265 22% 14%;
+    --card-foreground: 265 10% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 265 22% 14%;
+    --popover-foreground: 265 10% 98%;
 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 265 89% 70%;
+    --primary-foreground: 265 50% 10%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 265 30% 18%;
+    --secondary-foreground: 265 10% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 265 20% 18%;
+    --muted-foreground: 265 15% 72%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 265 25% 22%;
+    --accent-foreground: 265 10% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 265 25% 24%;
+    --input: 265 25% 24%;
+    --ring: 265 89% 70%;
 
     --radius: 0.5rem;
   }
