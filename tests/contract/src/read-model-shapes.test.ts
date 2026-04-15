@@ -1,11 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import type {
+  AsyncPendingResponse,
   RepositorySummary,
   BranchSummary,
+  PullRequestDetailResponse,
+  PullRequestRiskAnalysisResponse,
   PullRequestSummary,
   RepositoryListResponse,
   BranchListResponse,
   PullRequestListResponse,
+  ReviewRecommendationsResponse,
   RepositoryVisibility,
   BranchKind,
   PullRequestViewState,
@@ -139,5 +143,109 @@ describe('paginated envelope shapes', () => {
       meta: { requestId: 'r1', timestamp: new Date().toISOString(), total: 1 },
     };
     expect(resp.data.length).toBe(1);
+  });
+});
+
+describe('PR detail and analysis envelope shapes', () => {
+  it('PullRequestDetailResponse exposes workflow, review, and quality gate state', () => {
+    const resp: PullRequestDetailResponse = {
+      data: {
+        pullRequest: makePR(),
+        workflowState: 'merge-blocked',
+        githubUrl: 'https://github.example.com/acme/my-repo/pull/1',
+        interpretedSummary: '필수 체크 실패로 병합이 차단되었습니다.',
+        changedFiles: 12,
+        commits: 3,
+        labels: ['hotfix'],
+        linkedBuilds: [
+          {
+            id: 'build-1',
+            provider: 'github_actions',
+            status: 'failed',
+            targetName: 'ci',
+            url: 'https://ci.example.com/build/1',
+          },
+        ],
+        relatedIssues: ['INC-1'],
+        reviewStatus: {
+          reviewerCount: 2,
+          requiredReviewerCount: 2,
+          approvals: 1,
+          changesRequested: 1,
+          codeOwnersSatisfied: false,
+          checklistCompleted: true,
+          missingReviewers: ['codeowners'],
+          pendingReviewers: [],
+        },
+        qualityGateStatus: {
+          requiredChecksPassed: false,
+          requiredCheckCount: 2,
+          requiredCheckPassingCount: 1,
+          failingChecks: ['ci'],
+          mergeBlockedReasons: ['필수 체크 실패'],
+          staticAnalysisStatus: 'failed',
+          commitMessagePolicyPassed: true,
+          releaseImpact: false,
+          mergeQueueRequired: false,
+        },
+      },
+      meta: { requestId: 'r1', timestamp: new Date().toISOString() },
+    };
+    expect(resp.data.workflowState).toBe('merge-blocked');
+    expect(resp.data.reviewStatus.codeOwnersSatisfied).toBe(false);
+    expect(resp.data.qualityGateStatus.failingChecks).toContain('ci');
+  });
+
+  it('PullRequestRiskAnalysisResponse exposes typed signals', () => {
+    const resp: PullRequestRiskAnalysisResponse = {
+      data: {
+        riskLevel: 'high',
+        score: 88,
+        summary: 'hotspot 파일이 포함되었습니다.',
+        signals: [
+          {
+            type: 'hotspot',
+            severity: 'high',
+            summary: '최근 충돌 hotspot 포함',
+            scoreContribution: 20,
+          },
+        ],
+        recommendedTests: ['smoke'],
+        impactedModules: ['boot'],
+      },
+      meta: { requestId: 'r1', timestamp: new Date().toISOString() },
+    };
+    expect(resp.data.signals[0]?.severity).toBe('high');
+  });
+
+  it('ReviewRecommendationsResponse exposes codeowner and reviewer sets', () => {
+    const resp: ReviewRecommendationsResponse = {
+      data: {
+        requiredCodeOwners: ['platform-boot'],
+        missingCodeOwners: [],
+        recommendedReviewers: [
+          {
+            id: 'u1',
+            login: 'alice',
+            displayName: 'Alice',
+            email: null,
+          },
+        ],
+        rationale: ['최근 리뷰 이력 기반 추천'],
+      },
+      meta: { requestId: 'r1', timestamp: new Date().toISOString() },
+    };
+    expect(resp.data.recommendedReviewers[0]?.login).toBe('alice');
+  });
+
+  it('AsyncPendingResponse models queued or running analysis', () => {
+    const resp: AsyncPendingResponse = {
+      data: {
+        status: 'running',
+        jobId: 'job-1',
+      },
+      meta: { requestId: 'r1', timestamp: new Date().toISOString() },
+    };
+    expect(resp.data.status).toBe('running');
   });
 });

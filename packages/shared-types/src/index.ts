@@ -212,10 +212,13 @@ export interface BranchSummary {
 
 export interface BuildSummary {
   id: string;
-  name: string;
-  status: 'success' | 'failure' | 'pending' | 'cancelled';
-  url: string | null;
+  provider: string;
+  status: 'queued' | 'running' | 'success' | 'failed' | 'cancelled';
+  targetName: string;
+  url: string;
 }
+
+export type StaticAnalysisStatus = 'not-required' | 'pending' | 'passed' | 'failed';
 
 /** mirrors openapi.yaml #/components/schemas/PullRequestSummary */
 export interface PullRequestSummary {
@@ -232,13 +235,84 @@ export interface PullRequestSummary {
   updatedAt: string;
 }
 
+export interface PullRequestReviewStatus {
+  reviewerCount: number;
+  requiredReviewerCount: number;
+  approvals: number;
+  changesRequested: number;
+  codeOwnersSatisfied: boolean;
+  checklistCompleted: boolean;
+  missingReviewers: string[];
+  pendingReviewers: string[];
+}
+
+export interface PullRequestQualityGateStatus {
+  requiredChecksPassed: boolean;
+  requiredCheckCount: number;
+  requiredCheckPassingCount: number;
+  failingChecks: string[];
+  mergeBlockedReasons: string[];
+  staticAnalysisStatus: StaticAnalysisStatus;
+  commitMessagePolicyPassed: boolean;
+  releaseImpact: boolean;
+  mergeQueueRequired: boolean;
+}
+
 export interface PullRequestDetail {
   pullRequest: PullRequestSummary;
+  workflowState: PullRequestState;
+  githubUrl: string;
+  interpretedSummary: string;
   changedFiles: number;
   commits: number;
   labels: string[];
   linkedBuilds: BuildSummary[];
   relatedIssues: string[];
+  reviewStatus: PullRequestReviewStatus;
+  qualityGateStatus: PullRequestQualityGateStatus;
+}
+
+export interface RiskSignal {
+  type: string;
+  severity: RiskLevel;
+  summary: string;
+  scoreContribution: number;
+}
+
+export interface PullRequestRiskAnalysis {
+  riskLevel: RiskLevel;
+  score: number;
+  summary: string;
+  signals: RiskSignal[];
+  recommendedTests: string[];
+  impactedModules: string[];
+}
+
+export interface ReviewRecommendations {
+  requiredCodeOwners: string[];
+  missingCodeOwners: string[];
+  recommendedReviewers: UserSummary[];
+  rationale: string[];
+}
+
+export interface AsyncPendingResult {
+  status: 'queued' | 'running';
+  jobId: string;
+}
+
+export interface PullRequestAssistRequestBody {
+  repositoryId: string;
+  sourceBranch: string;
+  baseBranch: string;
+  draft?: boolean;
+}
+
+export interface PullRequestAssistResult {
+  proposedTitle: string;
+  proposedBody: string;
+  recommendedReviewers: UserSummary[];
+  checklist: string[];
+  riskSummary: string;
 }
 
 export interface BranchDetail {
@@ -255,6 +329,10 @@ export type BranchListResponse = DataEnvelope<BranchSummary[]>;
 export type BranchDetailResponse = DataEnvelope<BranchDetail>;
 export type PullRequestListResponse = DataEnvelope<PullRequestSummary[]>;
 export type PullRequestDetailResponse = DataEnvelope<PullRequestDetail>;
+export type PullRequestRiskAnalysisResponse = DataEnvelope<PullRequestRiskAnalysis>;
+export type ReviewRecommendationsResponse = DataEnvelope<ReviewRecommendations>;
+export type AsyncPendingResponse = DataEnvelope<AsyncPendingResult>;
+export type PullRequestAssistResponse = DataEnvelope<PullRequestAssistResult>;
 
 /**
  * Badge tones — mirrors `docs/04-frontend/frontend_badge_action_mapping.md` §4.2.

@@ -1118,6 +1118,13 @@ components:
           properties:
             pullRequest:
               $ref: '#/components/schemas/PullRequestSummary'
+            workflowState:
+              $ref: '#/components/schemas/PullRequestState'
+            githubUrl:
+              type: string
+              format: uri
+            interpretedSummary:
+              type: string
             changedFiles:
               type: integer
             commits:
@@ -1134,6 +1141,10 @@ components:
               type: array
               items:
                 type: string
+            reviewStatus:
+              $ref: '#/components/schemas/PullRequestReviewStatus'
+            qualityGateStatus:
+              $ref: '#/components/schemas/PullRequestQualityGateStatus'
         meta:
           $ref: '#/components/schemas/ApiMeta'
 
@@ -1619,6 +1630,80 @@ components:
         url:
           type: string
           format: uri
+
+    PullRequestState:
+      type: string
+      description: |
+        Full PR business state machine. Source of truth:
+        `docs/03-api/state_transition_spec.md` section 4.
+      enum:
+        - draft
+        - open
+        - under-review
+        - changes-requested
+        - approved
+        - merge-blocked
+        - ready-to-merge
+        - queued-for-merge
+        - merged
+        - closed
+        - reverted
+
+    StaticAnalysisStatus:
+      type: string
+      enum: [not-required, pending, passed, failed]
+
+    PullRequestReviewStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        reviewerCount:
+          type: integer
+        requiredReviewerCount:
+          type: integer
+        approvals:
+          type: integer
+        changesRequested:
+          type: integer
+        codeOwnersSatisfied:
+          type: boolean
+        checklistCompleted:
+          type: boolean
+        missingReviewers:
+          type: array
+          items:
+            type: string
+        pendingReviewers:
+          type: array
+          items:
+            type: string
+
+    PullRequestQualityGateStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        requiredChecksPassed:
+          type: boolean
+        requiredCheckCount:
+          type: integer
+        requiredCheckPassingCount:
+          type: integer
+        failingChecks:
+          type: array
+          items:
+            type: string
+        mergeBlockedReasons:
+          type: array
+          items:
+            type: string
+        staticAnalysisStatus:
+          $ref: '#/components/schemas/StaticAnalysisStatus'
+        commitMessagePolicyPassed:
+          type: boolean
+        releaseImpact:
+          type: boolean
+        mergeQueueRequired:
+          type: boolean
 
     TimelineEvent:
       type: object

@@ -555,6 +555,24 @@ required checks 및 내부 품질 게이트의 공통 저장소.
 | analyzed_at | timestamptz | 시각 |
 | analyzer_version | text | 버전 |
 
+### 8.4.9 `core_pull_request_review_recommendations`
+
+PR 상세 화면과 리뷰 추천 API가 참조하는 최신 reviewer recommendation snapshot.
+
+| 컬럼 | 타입 | 설명 |
+|---|---|---|
+| id | bigint pk | 내부 PK |
+| pull_request_id | bigint unique fk | PR |
+| recommendation_status | text | queued/running/succeeded/failed/stale |
+| required_codeowners | jsonb | 필수 CODEOWNERS 목록 |
+| missing_codeowners | jsonb | 아직 충족되지 않은 CODEOWNERS |
+| recommended_reviewers | jsonb | 추천 reviewer 목록 |
+| rationale | jsonb | 추천 근거 |
+| last_job_public_id | uuid null | 마지막 계산 job |
+| computed_at | timestamptz null | 계산 시각 |
+| created_at | timestamptz | 생성 |
+| updated_at | timestamptz | 수정 |
+
 ---
 
 ## 8.5 정책 영역

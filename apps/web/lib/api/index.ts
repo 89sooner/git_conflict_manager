@@ -10,5 +10,12 @@ export {
 export {
   listPullRequests,
   getPullRequest,
+  getPullRequestRiskAnalysis,
+  getPullRequestReviewRecommendations,
   type ListPullRequestsParams,
+  type PullRequestRiskAnalysisPending,
+  type PullRequestRiskAnalysisReady,
+  type PullRequestRiskAnalysisResponse,
+  type PullRequestReviewRecommendations,
+  type PullRequestReviewRecommendationsResponse,
 } from './pullRequests';
