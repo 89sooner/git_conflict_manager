@@ -1,7 +1,7 @@
 import { createServer } from './index.js';
 
 const app = createServer();
-const port = Number(process.env.PORT ?? 3001);
+const port = Number(process.env.PORT ?? 4000);
 
 app
   .listen({ port, host: '0.0.0.0' })

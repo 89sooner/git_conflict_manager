@@ -72,7 +72,7 @@ API base URL을 두 개의 환경변수로 분리한다.
 
 1. Phase 5는 server component 중심이지만, 일부 client interaction(필터, 검색)은 Phase 6에서 도입된다. 그때 base URL이 다를 수 있다.
 2. SSR과 CSR이 동일 URL을 강제하면 컨테이너 환경에서 SSR이 외부 도메인을 거꾸로 타고 들어가는 비효율이 발생한다.
-3. 환경변수 분리는 Next.js 표준 패턴이고, 두 변수 모두 누락돼도 dev에서는 `localhost:4000`로 동작한다.
+3. 환경변수 분리는 Next.js 표준 패턴이고, 두 변수 모두 누락돼도 dev에서는 API 기본 포트와 일치하는 `localhost:4000`로 동작한다.
 
 ### 영향
 

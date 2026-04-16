@@ -56,6 +56,24 @@ describe('apiFetch', () => {
     expect(result.meta.total).toBe(0);
   });
 
+  it('falls back to the API default port when no base-url env vars are set', async () => {
+    delete process.env.API_BASE_URL_INTERNAL;
+    delete process.env.NEXT_PUBLIC_API_BASE_URL;
+
+    const fetchMock = mockFetch({
+      status: 200,
+      body: {
+        data: [],
+        meta: { requestId: 'req-default', total: 0, page: 1, pageSize: 20 },
+      },
+    });
+
+    await apiFetch('/api/v1/repositories');
+
+    const [calledUrl] = firstCall(fetchMock);
+    expect(calledUrl).toBe('http://localhost:4000/api/v1/repositories');
+  });
+
   it('injects x-gsp-dev-user header on the server when GSP_DEV_USER is set', async () => {
     const fetchMock = mockFetch({
       status: 200,
