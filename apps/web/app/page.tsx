@@ -53,10 +53,10 @@ export default async function HomePage() {
   const reviewRequestedPullRequests = pullRequests.filter((pr) => pr.waitingForReview).slice(0, 2);
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-col mb-2">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">내 작업 요약</h1>
-        <p className="text-muted-foreground text-sm mt-1">
+    <div className="flex flex-col gap-8">
+      <header className="flex flex-col mb-1 gap-1.5">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">내 작업 요약</h1>
+        <p className="text-muted-foreground text-sm">
           오늘 처리해야 할 주요 변경 사항과 위험 항목입니다.
         </p>
       </header>
@@ -138,25 +138,28 @@ export default async function HomePage() {
         </ListPanel>
 
         <ListPanel title="최근 충돌 / Backout">
-          <div className="flex items-center justify-between px-5 py-4 hover:bg-secondary/40 transition-colors">
+          <Link
+            href="/conflicts"
+            className="flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
                 <ShieldAlert className="h-4 w-4" />
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-medium text-foreground text-sm">Rebase 충돌 발생</span>
+                <span className="font-medium text-foreground text-sm tracking-tight">Rebase 충돌 발생</span>
                 <span className="text-xs text-muted-foreground">feature/tx-queue 브랜치</span>
               </div>
             </div>
             <StatusBadge descriptor={conflictBadge('detected')} />
-          </div>
+          </Link>
         </ListPanel>
 
-        <ListPanel title="빠른 실행" className="border-border bg-secondary/10">
+        <ListPanel title="빠른 실행" className="border-border/60 bg-transparent">
           <div className="p-2 flex flex-col gap-1">
             <Link
               href="/pulls"
-              className="inline-flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground rounded-lg hover:bg-card hover:shadow-vercel transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="inline-flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground rounded-lg hover:bg-card/80 hover:shadow-sm border border-transparent hover:border-border/60 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <div className="flex items-center gap-3">
                 <Play className="h-4 w-4 text-muted-foreground/60" />
@@ -166,7 +169,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/backouts"
-              className="inline-flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground rounded-lg hover:bg-card hover:shadow-vercel transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="inline-flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground rounded-lg hover:bg-card/80 hover:shadow-sm border border-transparent hover:border-border/60 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <div className="flex items-center gap-3">
                 <ShieldAlert className="h-4 w-4 text-muted-foreground/60" />
@@ -197,7 +200,7 @@ function ListRow({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
       href={href}
-      className="flex items-center justify-between px-5 py-4 hover:bg-secondary/40 transition-colors"
+      className="flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors"
     >
       {children}
     </Link>
