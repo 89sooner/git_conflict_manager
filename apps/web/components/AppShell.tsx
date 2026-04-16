@@ -22,11 +22,11 @@ export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans">
-      <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 font-semibold text-foreground">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
-              <GitMerge className="h-5 w-5" />
+      <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 border-b border-white/5 bg-background/80 backdrop-blur-xl">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2.5 font-semibold text-foreground tracking-tight">
+            <div className="flex h-7 w-7 items-center justify-center rounded overflow-hidden bg-foreground text-background shadow-sm">
+              <GitMerge className="h-4 w-4" />
             </div>
             <span>{appConfig.appName}</span>
           </div>
