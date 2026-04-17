@@ -1,13 +1,7 @@
 import type { FastifyBaseLogger } from 'fastify';
+import { enqueueSyncJob } from '@gsp/runtime-store';
 import type { SyncJobRequest } from '../github/types.js';
 
-/**
- * Sync job queue — Phase 3 baseline stub.
- *
- * Emits jobs to the logger for now. Replace this with a real queue
- * (pg-backed integration_sync_jobs INSERT or a message broker) once
- * the DB connection and worker are wired in a later phase.
- */
 export class SyncJobQueue {
   private readonly logger: FastifyBaseLogger;
 
@@ -16,9 +10,19 @@ export class SyncJobQueue {
   }
 
   enqueue(job: SyncJobRequest): void {
+    const queued = enqueueSyncJob({
+      jobType: job.jobType,
+      triggerType: job.triggerType,
+      orgGithubId: job.orgGithubId,
+      repoGithubId: job.repoGithubId,
+      parameters: job.parameters,
+      correlationId: job.correlationId,
+    });
+
     this.logger.info(
       {
         component: 'sync-queue',
+        jobId: queued.id,
         jobType: job.jobType,
         triggerType: job.triggerType,
         repoGithubId: job.repoGithubId ?? null,

@@ -1,7 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { resetRuntimeStore } from '@gsp/runtime-store';
 import { createServer } from '../src/index.js';
 
 const DEV_AUTH = { 'x-gsp-dev-user': 'bootstrap' };
+
+beforeEach(() => {
+  process.env.GSP_RUNTIME_STORE_FILE = '/tmp/gsp-api-read-model-store.json';
+  resetRuntimeStore();
+});
 const REPO_ID = '11111111-1111-4111-8111-111111111111';
 
 describe('GET /api/v1/repositories', () => {

@@ -1,6 +1,6 @@
 import type { RepositorySummary } from '@gsp/shared-types';
+import { readRuntimeStore } from '@gsp/runtime-store';
 import { BaseRepository } from './baseRepository.js';
-import { MOCK_REPOSITORIES } from '../data/mockReadModel.js';
 
 export interface ListRepositoriesFilter {
   orgId?: string;
@@ -19,7 +19,7 @@ export interface PaginatedResult<T> {
 
 export class RepositoryRepository extends BaseRepository {
   async list(filter: ListRepositoriesFilter): Promise<PaginatedResult<RepositorySummary>> {
-    let items = [...MOCK_REPOSITORIES];
+    let items = [...readRuntimeStore().repositories];
 
     if (filter.search) {
       const query = filter.search.toLowerCase();
@@ -41,6 +41,6 @@ export class RepositoryRepository extends BaseRepository {
   }
 
   async findById(id: string): Promise<RepositorySummary | null> {
-    return MOCK_REPOSITORIES.find((repo) => repo.id === id) ?? null;
+    return readRuntimeStore().repositories.find((repo) => repo.id === id) ?? null;
   }
 }

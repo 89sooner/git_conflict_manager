@@ -11,6 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@gsp/runtime-store": "workspace:*",
     "@gsp/shared-types": "workspace:*",
     "fastify": "^5.0.0"
   },

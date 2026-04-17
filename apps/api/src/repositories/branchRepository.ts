@@ -1,10 +1,10 @@
 import type { BranchSummary, BranchDetail } from '@gsp/shared-types';
+import { readRuntimeStore } from '@gsp/runtime-store';
 import { BaseRepository } from './baseRepository.js';
-import { MOCK_BRANCH_DETAILS, MOCK_BRANCHES } from '../data/mockReadModel.js';
 
 export class BranchRepository extends BaseRepository {
   async list(repositoryId: string, kind?: string, stale?: boolean): Promise<BranchSummary[]> {
-    let branches = [...(MOCK_BRANCHES[repositoryId] ?? [])];
+    let branches = [...(readRuntimeStore().branches[repositoryId] ?? [])];
     if (kind) {
       branches = branches.filter((branch) => branch.kind === kind);
     }
@@ -15,6 +15,6 @@ export class BranchRepository extends BaseRepository {
   }
 
   async findByName(repositoryId: string, branchName: string): Promise<BranchDetail | null> {
-    return MOCK_BRANCH_DETAILS[`${repositoryId}::${branchName}`] ?? null;
+    return readRuntimeStore().branchDetails[`${repositoryId}::${branchName}`] ?? null;
   }
 }

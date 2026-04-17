@@ -1,5 +1,8 @@
+import { processPendingSyncJobs } from './jobs/pullRequestAnalysis.js';
+
 function main() {
-  console.log('worker bootstrap started');
+  const result = processPendingSyncJobs(console);
+  console.log(`worker bootstrap processed ${result.processedJobs} queued sync jobs`);
 }
 
 main();

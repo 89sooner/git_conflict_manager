@@ -1,7 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { resetRuntimeStore } from '@gsp/runtime-store';
 import { createServer } from '../src/index.js';
 
 const DEV_AUTH = { 'x-gsp-dev-user': 'bootstrap' };
+
+beforeEach(() => {
+  process.env.GSP_RUNTIME_STORE_FILE = '/tmp/gsp-api-read-model-store.json';
+  resetRuntimeStore();
+});
 const READY_PR_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
 const PENDING_PR_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2';
 const FAILED_PR_ID = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc3';

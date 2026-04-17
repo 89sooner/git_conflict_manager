@@ -1,8 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { resetRuntimeStore } from '@gsp/runtime-store';
 import { createServer } from '../src/index.js';
 import { signPayload } from '../src/lib/github/verify.js';
 
 const TEST_SECRET = 'test-webhook-secret';
+
+beforeEach(() => {
+  process.env.GSP_RUNTIME_STORE_FILE = '/tmp/gsp-api-webhooks-store.json';
+  resetRuntimeStore();
+});
 
 function makeBody(payload: unknown): Buffer {
   return Buffer.from(JSON.stringify(payload), 'utf-8');

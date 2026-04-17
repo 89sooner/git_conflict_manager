@@ -5,15 +5,8 @@ import type {
   PullRequestSummary,
   ReviewRecommendations,
 } from '@gsp/shared-types';
+import { readRuntimeStore } from '@gsp/runtime-store';
 import { BaseRepository } from './baseRepository.js';
-import {
-  MOCK_PULL_REQUEST_DETAILS,
-  MOCK_PULL_REQUESTS,
-  MOCK_REVIEW_RECOMMENDATIONS,
-  MOCK_RISK_ANALYSIS,
-  MOCK_RISK_FAILURES,
-  MOCK_RISK_PENDING,
-} from '../data/mockReadModel.js';
 
 export interface ListPullRequestsFilter {
   repositoryId?: string;
@@ -39,11 +32,11 @@ export type RiskAnalysisLookup =
 
 export class PullRequestRepository extends BaseRepository {
   async list(filter: ListPullRequestsFilter): Promise<PaginatedResult<PullRequestSummary>> {
-    let items = [...MOCK_PULL_REQUESTS];
+    const snapshot = readRuntimeStore();
+    let items = [...snapshot.pullRequests];
 
     if (filter.repositoryId) {
-      items = items.filter((pr) => MOCK_PULL_REQUEST_DETAILS[pr.id]?.pullRequest.id === pr.id);
-      items = items.filter((pr) => this.repositoryIdFor(pr.id) === filter.repositoryId);
+      items = items.filter((pr) => snapshot.pullRequestRepositoryIds[pr.id] === filter.repositoryId);
     }
 
     if (filter.state && filter.state !== 'all') {
@@ -71,35 +64,27 @@ export class PullRequestRepository extends BaseRepository {
   }
 
   async findById(id: string): Promise<PullRequestDetail | null> {
-    return MOCK_PULL_REQUEST_DETAILS[id] ?? null;
+    return readRuntimeStore().pullRequestDetails[id] ?? null;
   }
 
   async findRiskAnalysis(id: string): Promise<RiskAnalysisLookup | null> {
-    if (MOCK_RISK_ANALYSIS[id]) {
-      return { kind: 'ready', data: MOCK_RISK_ANALYSIS[id] };
+    const row = readRuntimeStore().pullRequestRisks[id];
+    if (!row) return null;
+    if (row.status === 'succeeded' && row.result) {
+      return { kind: 'ready', data: row.result };
     }
-    if (MOCK_RISK_PENDING[id]) {
-      return { kind: 'pending', data: MOCK_RISK_PENDING[id] };
+    if ((row.status === 'queued' || row.status === 'running' || row.status === 'stale') && row.jobId) {
+      return { kind: 'pending', data: { status: row.status === 'running' ? 'running' : 'queued', jobId: row.jobId } };
     }
-    if (MOCK_RISK_FAILURES[id]) {
-      return { kind: 'failed', ...MOCK_RISK_FAILURES[id] };
+    if (row.status === 'failed' && row.error) {
+      return { kind: 'failed', message: row.error.message, retryable: row.error.retryable };
     }
     return null;
   }
 
   async findReviewRecommendations(id: string): Promise<ReviewRecommendations | null> {
-    return MOCK_REVIEW_RECOMMENDATIONS[id] ?? null;
-  }
-
-  private repositoryIdFor(pullRequestId: string): string | null {
-    switch (pullRequestId) {
-      case 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1':
-      case 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2':
-        return '11111111-1111-4111-8111-111111111111';
-      case 'cccccccc-cccc-4ccc-8ccc-ccccccccccc3':
-        return '22222222-2222-4222-8222-222222222222';
-      default:
-        return null;
-    }
+    const row = readRuntimeStore().reviewRecommendations[id];
+    if (!row || row.status !== 'succeeded') return null;
+    return row.result;
   }
 }
