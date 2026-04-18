@@ -138,21 +138,9 @@ export default async function HomePage() {
         </ListPanel>
 
         <ListPanel title="최근 충돌 / Backout">
-          <Link
-            href="/conflicts"
-            className="flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
-                <ShieldAlert className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="font-medium text-foreground text-sm tracking-tight">Rebase 충돌 발생</span>
-                <span className="text-xs text-muted-foreground">feature/tx-queue 브랜치</span>
-              </div>
-            </div>
-            <StatusBadge descriptor={conflictBadge('detected')} />
-          </Link>
+          <p className="text-sm text-muted-foreground py-4 text-center">
+            Phase 7에서 구현 예정입니다.
+          </p>
         </ListPanel>
 
         <ListPanel title="빠른 실행" className="border-border/60 bg-transparent">

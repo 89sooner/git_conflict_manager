@@ -6,7 +6,7 @@
 - 상태는 `todo`, `doing`, `blocked`, `done` 중 하나를 사용한다.
 - blocked는 반드시 이유와 해소 조건을 같이 적는다.
 
-## 예시 템플릿
+## 예시 템플릿 <!-- 참고용 포맷입니다. T-001~T-003은 실제 태스크가 아닙니다. -->
 
 | ID | Phase | Workflow | Task | Owner | Status | Notes |
 |---|---|---|---|---|---|---|
@@ -34,3 +34,4 @@
 | T-017 | 6 | 06_pr_core_features | PR risk/review read model을 실제 DB/worker 파이프라인에 연결 | codex | done | `@gsp/runtime-store` 패키지 추가, repository read path를 runtime store 조회로 전환, webhook sync job을 persistent queue로 저장, worker `processPendingSyncJobs` 구현, api/worker/web/contract 검증 통과 |
 | T-018 | 7 | 07_conflict_support | PRD 기준 Phase 7 갭 분석 및 기능 요구사항/workflow 문서화 | codex | done | `workflows/07_conflict_support.md` 추가, conflict API/UI/worker/migration 부재와 Phase 7 범위·의존성 정리 |
 | T-019 | 7 | 07_conflict_support | conflict case list/detail, guidance job, 상태 전이 구현 | unassigned | todo | 선행 조건인 `T-017` 완료. 다음 단계로 conflict persistence(`core_conflict_cases`,`core_conflict_files`)와 API/UI 구현 착수 가능 |
+| T-020 | 6 | 06_pr_core_features | Gemini 리뷰 보완 — 스타일 토큰, 홈 데모 정리, ADR-0003 작성 | claude | done | `conflicts/backouts` `text-slate-*` → `text-foreground/muted-foreground`, 홈 충돌/backout 패널 하드코딩 → placeholder, `docs/05-decisions/adr-0003-runtime-store-and-db-migration-strategy.md` 추가 |

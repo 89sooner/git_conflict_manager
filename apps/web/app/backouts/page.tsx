@@ -6,8 +6,8 @@ export default function BackoutsPage() {
   return (
     <section className="flex flex-col gap-4">
       <header className="flex flex-col">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Backout Center</h1>
-        <p className="text-sm text-slate-500 mt-1">revert PR 요청과 진행 상태를 확인합니다.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Backout Center</h1>
+        <p className="text-sm text-muted-foreground mt-1">revert PR 요청과 진행 상태를 확인합니다.</p>
       </header>
       <EmptyState
         title="최근 Backout 요청이 없습니다"
