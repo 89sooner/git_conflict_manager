@@ -35,3 +35,4 @@
 | T-018 | 7 | 07_conflict_support | PRD 기준 Phase 7 갭 분석 및 기능 요구사항/workflow 문서화 | codex | done | `workflows/07_conflict_support.md` 추가, conflict API/UI/worker/migration 부재와 Phase 7 범위·의존성 정리 |
 | T-019 | 7 | 07_conflict_support | conflict case list/detail, guidance job, 상태 전이 구현 | unassigned | todo | 선행 조건인 `T-017` 완료. 다음 단계로 conflict persistence(`core_conflict_cases`,`core_conflict_files`)와 API/UI 구현 착수 가능 |
 | T-020 | 6 | 06_pr_core_features | Gemini 리뷰 보완 — 스타일 토큰, 홈 데모 정리, ADR-0003 작성 | claude | done | `conflicts/backouts` `text-slate-*` → `text-foreground/muted-foreground`, 홈 충돌/backout 패널 하드코딩 → placeholder, `docs/05-decisions/adr-0003-runtime-store-and-db-migration-strategy.md` 추가 |
+| T-021 | 6 | 06_pr_core_features | Gemini audit follow-up — mockReadModel 중복 제거, ADR-0002 작성, ADR 번호 갭 해소 | gemini | done | `apps/api/src/data/mockReadModel.ts` 삭제 (dead code 404줄 제거), `docs/05-decisions/adr-0002-mock-read-model-deprecation.md` 추가, ADR-0003 전환 작업 §3 완료 표기 |

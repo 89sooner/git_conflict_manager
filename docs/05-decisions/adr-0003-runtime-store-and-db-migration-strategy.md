@@ -47,7 +47,7 @@ Phase 2에서 PostgreSQL 스키마 문서(`docs/02-architecture/data_model_and_d
 
 1. migration 파일 적용 (`0001_baseline.sql`, `0002_pr_analysis_read_models.sql`)
 2. `@gsp/runtime-store` 의존 코드를 Drizzle ORM 또는 pg 직접 쿼리로 교체
-3. `apps/api/src/data/mockReadModel.ts` stub 삭제
+3. ~~`apps/api/src/data/mockReadModel.ts` stub 삭제~~ (완료 — ADR-0002 참조)
 4. worker `pullRequestAnalysis.ts`의 결과를 DB 테이블에 저장하도록 변경
 5. runtime-store 패키지를 devDependency로 강등하거나 테스트 fixture 전용으로 격리
 

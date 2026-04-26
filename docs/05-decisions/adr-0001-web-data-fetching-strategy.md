@@ -87,5 +87,5 @@ API base URL을 두 개의 환경변수로 분리한다.
 
 ## 후속 작업
 
-- Phase 6 진입 시 mutation/optimistic update 패턴을 ADR-0002로 분리한다.
-- Phase 10 SSO 통합 시 ADR-0003으로 SSO 결정을 별도 기록한다.
+- Phase 6 진입 시 mutation/optimistic update 패턴을 ADR-0004+로 분리한다. (ADR-0002는 mockReadModel 폐기에 사용됨)
+- Phase 10 SSO 통합 시 별도 ADR로 SSO 결정을 기록한다. (ADR-0003은 runtime-store 전략에 사용됨)
