@@ -3,6 +3,8 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import type {
   AsyncPendingResult,
+  BackoutDetail,
+  BackoutSummary,
   BranchDetail,
   BranchSummary,
   ConflictCaseDetail,
@@ -61,6 +63,8 @@ export interface RuntimeStoreSnapshot {
   reviewRecommendations: Record<string, RuntimeReviewRecommendationRecord>;
   conflictCases: ConflictCaseSummary[];
   conflictCaseDetails: Record<string, ConflictCaseDetail>;
+  backoutRequests: BackoutSummary[];
+  backoutDetails: Record<string, BackoutDetail>;
   syncJobs: RuntimeSyncJobRecord[];
 }
 
@@ -525,6 +529,8 @@ export function createSeedRuntimeStoreSnapshot(): RuntimeStoreSnapshot {
     },
     conflictCases: createSeedConflictCases(),
     conflictCaseDetails: createSeedConflictCaseDetails(),
+    backoutRequests: createSeedBackoutRequests(),
+    backoutDetails: createSeedBackoutDetails(),
     syncJobs: [],
   };
 }
@@ -680,6 +686,129 @@ function createSeedConflictCaseDetails(): Record<string, ConflictCaseDetail> {
         targetTeam: 'Release Engineering',
         guideUrl: 'https://wiki.example.com/cherry-pick-guide',
         disabledReason: null,
+      },
+    },
+  };
+}
+
+// ─── Backout seed data ─────────────────────────────────────────────────────
+
+function createSeedBackoutRequests(): BackoutSummary[] {
+  return [
+    {
+      id: 'ee111111-1111-4111-8111-111111111111',
+      repositoryId: '11111111-1111-4111-8111-111111111111',
+      targetBranch: 'main',
+      status: 'draft',
+      urgency: 'normal',
+      createdBy: {
+        id: '00000000-0000-4000-8000-000000000101',
+        login: 'eunji',
+        displayName: 'Eunji Kim',
+        email: 'eunji@example.com',
+      },
+      createdAt: '2026-04-16T02:00:00.000Z',
+    },
+    {
+      id: 'ee222222-2222-4222-8222-222222222222',
+      repositoryId: '11111111-1111-4111-8111-111111111111',
+      targetBranch: 'release/2026.04',
+      status: 'pending-approval',
+      urgency: 'high',
+      createdBy: {
+        id: '00000000-0000-4000-8000-000000000102',
+        login: 'minho',
+        displayName: 'Minho Lee',
+        email: 'minho@example.com',
+      },
+      createdAt: '2026-04-16T04:30:00.000Z',
+    },
+    {
+      id: 'ee333333-3333-4333-8333-333333333333',
+      repositoryId: '22222222-2222-4222-8222-222222222222',
+      targetBranch: 'main',
+      status: 'merged',
+      urgency: 'emergency',
+      createdBy: {
+        id: '00000000-0000-4000-8000-000000000103',
+        login: 'sohee',
+        displayName: 'Sohee Park',
+        email: 'sohee@example.com',
+      },
+      createdAt: '2026-04-14T22:00:00.000Z',
+    },
+  ];
+}
+
+function createSeedBackoutDetails(): Record<string, BackoutDetail> {
+  const reqs = createSeedBackoutRequests();
+  return {
+    'ee111111-1111-4111-8111-111111111111': {
+      backout: reqs[0]!,
+      target: {
+        sourceType: 'pull_request',
+        pullRequestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+        commitShas: [],
+      },
+      impactSummary:
+        'boot target validation과 board bring-up 로직이 분리되어 있던 PR #128의 변경을 되돌립니다. 부트 순서 의존성이 원래 상태로 복원됩니다.',
+      impactedModules: ['boot', 'board-init'],
+      recommendedValidations: [
+        'boot-control-ci 빌드 재실행',
+        'board-regression 테스트 확인',
+        '부트 순서 변경 이후 의존 PR 확인',
+      ],
+      revertPullRequest: null,
+    },
+    'ee222222-2222-4222-8222-222222222222': {
+      backout: reqs[1]!,
+      target: {
+        sourceType: 'commit_list',
+        pullRequestId: null,
+        commitShas: ['8c2bb0f', 'a1d9e3c'],
+      },
+      impactSummary:
+        'release/2026.04 브랜치에 반영된 image signing fallback 커밋 2건을 되돌립니다. 서명 검증 경로가 이전 버전으로 복원됩니다.',
+      impactedModules: ['signing', 'release-image'],
+      recommendedValidations: [
+        'release-signing-validation 빌드 재실행',
+        'image signing 통합 테스트 확인',
+        'main 브랜치 반영 상태 동기화 확인',
+      ],
+      revertPullRequest: null,
+    },
+    'ee333333-3333-4333-8333-333333333333': {
+      backout: reqs[2]!,
+      target: {
+        sourceType: 'pull_request',
+        pullRequestId: 'cccccccc-cccc-4ccc-8ccc-ccccccccccc3',
+        commitShas: [],
+      },
+      impactSummary:
+        'UART telemetry ISR noise 감소 리팩토링 (PR #57)을 긴급 되돌렸습니다. IRQ 핸들러 경합 문제가 원인이었으며, 수정 후 재적용 예정입니다.',
+      impactedModules: ['telemetry', 'uart-driver', 'irq-handler'],
+      recommendedValidations: [
+        'soc-telemetry-ci 빌드 확인',
+        'irq-safety-scan 재실행',
+        '원본 PR 작성자(sohee)와 재적용 일정 확인',
+      ],
+      revertPullRequest: {
+        id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+        number: 60,
+        title: 'Revert "refactor: reduce UART telemetry ISR noise"',
+        state: 'merged',
+        author: {
+          id: '00000000-0000-4000-8000-000000000103',
+          login: 'sohee',
+          displayName: 'Sohee Park',
+          email: 'sohee@example.com',
+        },
+        baseBranch: 'main',
+        headBranch: 'revert/pr-57-uart-noise',
+        riskLevel: 'high',
+        hasConflicts: false,
+        waitingForReview: false,
+        updatedAt: '2026-04-14T23:30:00Z',
       },
     },
   };

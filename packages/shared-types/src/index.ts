@@ -539,3 +539,63 @@ export interface ConflictCaseDetail {
 // Response envelope aliases — Conflict
 export type ConflictCaseListResponse = DataEnvelope<ConflictCaseSummary[]>;
 export type ConflictCaseDetailResponse = DataEnvelope<ConflictCaseDetail>;
+
+// ─── Backout domain types — Phase 8 ────────────────────────────────────────
+
+/** mirrors openapi.yaml CreateBackoutRequest.urgency */
+export type BackoutUrgency = 'normal' | 'high' | 'emergency';
+
+/** mirrors openapi.yaml BackoutTarget.sourceType */
+export type BackoutSourceType = 'pull_request' | 'commit_list';
+
+/** mirrors openapi.yaml #/components/schemas/BackoutTarget */
+export interface BackoutTarget {
+  sourceType: BackoutSourceType;
+  pullRequestId: string | null;
+  commitShas: string[];
+}
+
+/** mirrors openapi.yaml #/components/schemas/BackoutSummary */
+export interface BackoutSummary {
+  id: string;
+  repositoryId: string;
+  targetBranch: string;
+  status: BackoutState;
+  urgency: BackoutUrgency;
+  createdBy: UserSummary;
+  createdAt: string;
+}
+
+/** mirrors openapi.yaml #/components/schemas/BackoutDetailResponse.data */
+export interface BackoutDetail {
+  backout: BackoutSummary;
+  target: BackoutTarget;
+  impactSummary: string;
+  impactedModules: string[];
+  recommendedValidations: string[];
+  revertPullRequest: PullRequestSummary | null;
+}
+
+/** mirrors openapi.yaml #/components/schemas/CreateBackoutRequest */
+export interface CreateBackoutRequest {
+  repositoryId: string;
+  targetBranch: string;
+  reason: string;
+  incidentTicket: string | null;
+  urgency: BackoutUrgency;
+  approverIds: string[];
+  target: BackoutTarget;
+}
+
+/** mirrors openapi.yaml #/components/schemas/GenerateRevertPullRequestResponse.data */
+export interface GenerateRevertPullRequestResult {
+  dryRun: boolean;
+  canGenerate: boolean;
+  pullRequest: PullRequestSummary | null;
+  warnings: string[];
+}
+
+// Response envelope aliases — Backout
+export type BackoutListResponse = DataEnvelope<BackoutSummary[]>;
+export type BackoutDetailResponse = DataEnvelope<BackoutDetail>;
+export type GenerateRevertPullRequestResponse = DataEnvelope<GenerateRevertPullRequestResult>;

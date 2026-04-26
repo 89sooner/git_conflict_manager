@@ -24,3 +24,10 @@ export {
   getConflictCase,
   type ListConflictsParams,
 } from './conflicts';
+export {
+  listBackouts,
+  getBackout,
+  createBackout,
+  generateRevertPr,
+  type ListBackoutsParams,
+} from './backouts';
