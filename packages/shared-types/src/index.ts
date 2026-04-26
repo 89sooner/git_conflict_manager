@@ -467,3 +467,75 @@ export const CONFLICT_STATUS_BADGES = {
 export function conflictBadge(status: ConflictCaseStatus): BadgeDescriptor {
   return CONFLICT_STATUS_BADGES[status];
 }
+
+// ─── Conflict domain types — Phase 7 ───────────────────────────────────────
+
+/** mirrors openapi.yaml #/components/schemas/ConflictCaseSummary.type */
+export type ConflictType = 'merge' | 'rebase' | 'cherry-pick' | 'modify-delete' | 'rename';
+
+export const CONFLICT_TYPE_BADGES = {
+  merge: { label: 'Merge Conflict', tone: 'danger', description: 'merge 충돌' },
+  rebase: { label: 'Rebase Conflict', tone: 'danger', description: 'rebase 충돌' },
+  'cherry-pick': {
+    label: 'Cherry-pick Conflict',
+    tone: 'danger',
+    description: 'cherry-pick 충돌',
+  },
+  'modify-delete': {
+    label: 'Modify/Delete Conflict',
+    tone: 'warning',
+    description: 'modify-delete 충돌',
+  },
+  rename: { label: 'Rename Conflict', tone: 'warning', description: 'rename 충돌' },
+} as const satisfies Record<ConflictType, BadgeDescriptor>;
+
+export function conflictTypeBadge(type: ConflictType): BadgeDescriptor {
+  return CONFLICT_TYPE_BADGES[type];
+}
+
+/** mirrors openapi.yaml #/components/schemas/ConflictCaseSummary */
+export interface ConflictCaseSummary {
+  id: string;
+  type: ConflictType;
+  status: ConflictCaseStatus;
+  repositoryId: string;
+  branchName: string;
+  baseBranch: string;
+  pullRequestId: string | null;
+  conflictingFileCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** mirrors openapi.yaml #/components/schemas/ConflictFile */
+export interface ConflictFile {
+  path: string;
+  fileType: string;
+  conflictReason: string | null;
+  ownerTeam: string | null;
+  hotspotScore: number | null;
+  generated: boolean;
+}
+
+/** mirrors openapi.yaml #/components/schemas/EscalationInfo */
+export interface EscalationInfo {
+  available: boolean;
+  targetTeam: string | null;
+  guideUrl: string | null;
+  disabledReason: string | null;
+}
+
+/** mirrors openapi.yaml #/components/schemas/ConflictCaseDetailResponse.data */
+export interface ConflictCaseDetail {
+  conflict: ConflictCaseSummary;
+  interpretedStatus: string;
+  gitConceptHint: string;
+  conflictingFiles: ConflictFile[];
+  guidance: string[];
+  recoveryActions: string[];
+  escalation: EscalationInfo;
+}
+
+// Response envelope aliases — Conflict
+export type ConflictCaseListResponse = DataEnvelope<ConflictCaseSummary[]>;
+export type ConflictCaseDetailResponse = DataEnvelope<ConflictCaseDetail>;

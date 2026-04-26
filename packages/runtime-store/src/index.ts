@@ -5,6 +5,8 @@ import type {
   AsyncPendingResult,
   BranchDetail,
   BranchSummary,
+  ConflictCaseDetail,
+  ConflictCaseSummary,
   PullRequestDetail,
   PullRequestRiskAnalysis,
   PullRequestSummary,
@@ -57,6 +59,8 @@ export interface RuntimeStoreSnapshot {
   pullRequestRepositoryIds: Record<string, string>;
   pullRequestRisks: Record<string, RuntimeRiskRecord>;
   reviewRecommendations: Record<string, RuntimeReviewRecommendationRecord>;
+  conflictCases: ConflictCaseSummary[];
+  conflictCaseDetails: Record<string, ConflictCaseDetail>;
   syncJobs: RuntimeSyncJobRecord[];
 }
 
@@ -519,7 +523,165 @@ export function createSeedRuntimeStoreSnapshot(): RuntimeStoreSnapshot {
         error: null,
       },
     },
+    conflictCases: createSeedConflictCases(),
+    conflictCaseDetails: createSeedConflictCaseDetails(),
     syncJobs: [],
+  };
+}
+
+// ─── Conflict seed data ────────────────────────────────────────────────────
+
+function createSeedConflictCases(): ConflictCaseSummary[] {
+  return [
+    {
+      id: 'dd111111-1111-4111-8111-111111111111',
+      type: 'merge',
+      status: 'guided',
+      repositoryId: '11111111-1111-4111-8111-111111111111',
+      branchName: 'feature/boot-order-cleanup',
+      baseBranch: 'main',
+      pullRequestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+      conflictingFileCount: 3,
+      createdAt: '2026-04-15T06:00:00.000Z',
+      updatedAt: '2026-04-15T08:30:00.000Z',
+    },
+    {
+      id: 'dd222222-2222-4222-8222-222222222222',
+      type: 'rebase',
+      status: 'analyzing',
+      repositoryId: '22222222-2222-4222-8222-222222222222',
+      branchName: 'feature/reduce-uart-noise',
+      baseBranch: 'main',
+      pullRequestId: 'cccccccc-cccc-4ccc-8ccc-ccccccccccc3',
+      conflictingFileCount: 2,
+      createdAt: '2026-04-15T07:30:00.000Z',
+      updatedAt: '2026-04-15T09:00:00.000Z',
+    },
+    {
+      id: 'dd333333-3333-4333-8333-333333333333',
+      type: 'cherry-pick',
+      status: 'stale',
+      repositoryId: '11111111-1111-4111-8111-111111111111',
+      branchName: 'release/2026.04',
+      baseBranch: 'main',
+      pullRequestId: null,
+      conflictingFileCount: 1,
+      createdAt: '2026-04-14T10:00:00.000Z',
+      updatedAt: '2026-04-14T15:00:00.000Z',
+    },
+  ];
+}
+
+function createSeedConflictCaseDetails(): Record<string, ConflictCaseDetail> {
+  const cases = createSeedConflictCases();
+  return {
+    'dd111111-1111-4111-8111-111111111111': {
+      conflict: cases[0]!,
+      interpretedStatus: '가이드가 준비되었습니다. 아래 단계를 따라 충돌을 해결하세요.',
+      gitConceptHint: 'merge 충돌은 두 브랜치가 같은 파일의 같은 부분을 서로 다르게 수정했을 때 발생합니다. Git은 자동으로 병합할 수 없어 사용자의 수동 해결이 필요합니다.',
+      conflictingFiles: [
+        {
+          path: 'src/boot/boot_sequence.c',
+          fileType: 'source',
+          conflictReason: 'modify/modify',
+          ownerTeam: 'Platform Boot',
+          hotspotScore: 85,
+          generated: false,
+        },
+        {
+          path: 'src/boot/board_init.h',
+          fileType: 'header',
+          conflictReason: 'modify/modify',
+          ownerTeam: 'Platform Boot',
+          hotspotScore: 42,
+          generated: false,
+        },
+        {
+          path: 'generated/boot_config.json',
+          fileType: 'config',
+          conflictReason: 'modify/modify',
+          ownerTeam: null,
+          hotspotScore: null,
+          generated: true,
+        },
+      ],
+      guidance: [
+        '1. 로컬에서 `git fetch origin && git merge origin/main`을 실행합니다.',
+        '2. 충돌이 발생한 3개 파일을 열어 `<<<<<<<` 마커를 확인합니다.',
+        '3. `src/boot/boot_sequence.c`는 boot target 분리 로직과 기존 순서 검증 로직의 충돌입니다. 두 변경을 모두 유지하되 순서를 조정하세요.',
+        '4. `generated/boot_config.json`은 재생성으로 해결할 수 있습니다: `npm run generate:boot-config`',
+        '5. 해결 후 `git add .` → `git commit`으로 merge commit을 생성합니다.',
+        '6. CI 체크가 통과하는지 확인합니다.',
+      ],
+      recoveryActions: [
+        'merge를 취소하려면: `git merge --abort`',
+        'working tree를 이전 상태로 되돌리려면: `git reset --hard HEAD`',
+      ],
+      escalation: {
+        available: true,
+        targetTeam: 'Platform Boot',
+        guideUrl: 'https://wiki.example.com/merge-conflict-guide',
+        disabledReason: null,
+      },
+    },
+    'dd222222-2222-4222-8222-222222222222': {
+      conflict: cases[1]!,
+      interpretedStatus: '충돌 유형과 영향 범위를 분석하고 있습니다. 잠시 후 가이드가 제공됩니다.',
+      gitConceptHint: 'rebase 충돌은 커밋을 하나씩 base 위로 재적용하는 과정에서 발생합니다. 각 커밋마다 충돌이 발생할 수 있어 merge보다 해결이 복잡할 수 있습니다.',
+      conflictingFiles: [
+        {
+          path: 'drivers/telemetry/uart_isr.c',
+          fileType: 'source',
+          conflictReason: 'modify/modify',
+          ownerTeam: 'Telemetry',
+          hotspotScore: 92,
+          generated: false,
+        },
+        {
+          path: 'drivers/telemetry/ring_buffer.c',
+          fileType: 'source',
+          conflictReason: 'modify/delete',
+          ownerTeam: 'Telemetry',
+          hotspotScore: 67,
+          generated: false,
+        },
+      ],
+      guidance: [],
+      recoveryActions: [],
+      escalation: {
+        available: false,
+        targetTeam: null,
+        guideUrl: null,
+        disabledReason: '분석이 완료되지 않아 escalation을 사용할 수 없습니다.',
+      },
+    },
+    'dd333333-3333-4333-8333-333333333333': {
+      conflict: cases[2]!,
+      interpretedStatus: '원본 브랜치가 갱신되어 기존 가이드가 더 이상 유효하지 않습니다. 재분석이 필요합니다.',
+      gitConceptHint: 'cherry-pick 충돌은 특정 커밋을 다른 브랜치에 적용할 때, 해당 커밋이 의존하는 컨텍스트가 대상 브랜치에 없을 경우 발생합니다.',
+      conflictingFiles: [
+        {
+          path: 'src/release/signing_config.yaml',
+          fileType: 'config',
+          conflictReason: 'modify/modify',
+          ownerTeam: 'Release Engineering',
+          hotspotScore: 30,
+          generated: false,
+        },
+      ],
+      guidance: [
+        '⚠️ 이 가이드는 최신 상태가 아닙니다. 재분석을 실행해 주세요.',
+      ],
+      recoveryActions: [
+        'cherry-pick을 취소하려면: `git cherry-pick --abort`',
+      ],
+      escalation: {
+        available: true,
+        targetTeam: 'Release Engineering',
+        guideUrl: 'https://wiki.example.com/cherry-pick-guide',
+        disabledReason: null,
+      },
+    },
   };
 }
 

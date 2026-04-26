@@ -8,6 +8,7 @@ import { registerMeRoutes } from './routes/me.js';
 import { registerWebhookRoutes } from './routes/webhooks.js';
 import { registerRepositoryRoutes } from './routes/repositories.js';
 import { registerPullRequestRoutes } from './routes/pullRequests.js';
+import { registerConflictRoutes } from './routes/conflicts.js';
 
 export interface CreateServerOptions {
   logger?: boolean;
@@ -42,6 +43,7 @@ export function createServer(options: CreateServerOptions = {}): FastifyInstance
 
   registerRepositoryRoutes(app);
   registerPullRequestRoutes(app);
+  registerConflictRoutes(app);
 
   return app;
 }

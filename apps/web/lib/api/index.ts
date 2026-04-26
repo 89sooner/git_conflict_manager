@@ -19,3 +19,8 @@ export {
   type PullRequestReviewRecommendations,
   type PullRequestReviewRecommendationsResponse,
 } from './pullRequests';
+export {
+  listConflicts,
+  getConflictCase,
+  type ListConflictsParams,
+} from './conflicts';

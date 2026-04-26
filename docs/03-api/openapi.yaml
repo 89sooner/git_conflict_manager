@@ -1259,15 +1259,27 @@ components:
           enum: [merge, rebase, cherry-pick, modify-delete, rename]
         status:
           type: string
-          enum: [open, resolved, aborted]
+          description: |
+            Full conflict case state machine. Source of truth:
+            `docs/03-api/state_transition_spec.md` section 6.
+          enum: [detected, analyzing, guided, user-working, resolved, aborted, stale]
         repositoryId:
           type: string
           format: uuid
         branchName:
           type: string
+        baseBranch:
+          type: string
+        pullRequestId:
+          type: string
+          format: uuid
+          nullable: true
         conflictingFileCount:
           type: integer
         createdAt:
+          type: string
+          format: date-time
+        updatedAt:
           type: string
           format: date-time
 
@@ -1290,6 +1302,10 @@ components:
           type: string
         fileType:
           type: string
+        conflictReason:
+          type: string
+          nullable: true
+          description: "e.g. modify/modify, modify/delete, rename/rename"
         ownerTeam:
           type: string
           nullable: true
@@ -1298,6 +1314,22 @@ components:
           nullable: true
         generated:
           type: boolean
+
+    EscalationInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        available:
+          type: boolean
+        targetTeam:
+          type: string
+          nullable: true
+        guideUrl:
+          type: string
+          nullable: true
+        disabledReason:
+          type: string
+          nullable: true
 
     ConflictCaseDetailResponse:
       type: object
@@ -1325,6 +1357,8 @@ components:
               type: array
               items:
                 type: string
+            escalation:
+              $ref: '#/components/schemas/EscalationInfo'
         meta:
           $ref: '#/components/schemas/ApiMeta'
 
