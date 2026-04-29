@@ -826,7 +826,17 @@ export function readRuntimeStore(): RuntimeStoreSnapshot {
   if (!existsSync(file)) {
     return resetRuntimeStore();
   }
-  return JSON.parse(readFileSync(file, 'utf8')) as RuntimeStoreSnapshot;
+  const snapshot = JSON.parse(readFileSync(file, 'utf8')) as RuntimeStoreSnapshot;
+  
+  // Phase 8 fallback for existing store files
+  if (!snapshot.backoutRequests) {
+    snapshot.backoutRequests = createSeedBackoutRequests();
+  }
+  if (!snapshot.backoutDetails) {
+    snapshot.backoutDetails = createSeedBackoutDetails();
+  }
+  
+  return snapshot;
 }
 
 export function updateRuntimeStore(mutator: (snapshot: RuntimeStoreSnapshot) => void): RuntimeStoreSnapshot {
